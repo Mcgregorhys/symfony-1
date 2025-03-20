@@ -7,8 +7,15 @@
 
 // any CSS you import will output into a single css file (app.css in this case)
 import './styles/app.css';
-import { startStimulusApp } from '@symfony/stimulus-bridge';
-import '@symfony/ux-live-component';
 
-const app = startStimulusApp();
+// start the Stimulus application
+// import './bootstrap';
+import './bootstrap.js';
+
+const btn = document.getElementById("hamburger-icon");
+const nav = document.getElementById("mobile-menu");
+btn.addEventListener("click", () => {
+    nav.classList.toggle("flex");
+    nav.classList.toggle("hidden");
+});
 

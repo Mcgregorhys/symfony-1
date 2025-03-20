@@ -4,18 +4,6 @@ FROM php:8.3-fpm
 # Ustawienie katalogu roboczego
 WORKDIR /app
 
-# Dodaj użytkownika o takim samym UID i GID jak użytkownik na hoście
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-
-RUN groupadd -g ${GROUP_ID} myuser && \
-    useradd -u ${USER_ID} -g myuser -m myuser
-
-# Przełącz się na użytkownika myuser
-USER myuser
-
-WORKDIR /var/www/html
-
 # Instalacja wymaganych pakietów systemowych
 RUN apt-get update && apt-get install -y \
     unzip \
