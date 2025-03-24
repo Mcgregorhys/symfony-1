@@ -8,13 +8,8 @@ WORKDIR /app
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 
-RUN groupadd -g ${GROUP_ID} myuser && \
-    useradd -u ${USER_ID} -g myuser -m myuser
-
-# Przełącz się na użytkownika myuser
-USER myuser
-
-WORKDIR /var/www/html
+RUN groupmod -g ${GROUP_ID} www-data && \
+usermod -u ${USER_ID} -g ${GROUP_ID} www-data
 
 # Instalacja wymaganych pakietów systemowych
 RUN apt-get update && apt-get install -y \
@@ -51,5 +46,7 @@ COPY . .
 RUN mkdir -p /app/var && chown -R www-data:www-data /app/var && chmod -R 777 /app/var
 RUN chown -R www-data:www-data /app && chmod -R 777 /app
 
+RUN mkdir -p /app/.npm && \
+    chown -R www-data:www-data /app/.npm
 # Uruchamianie PHP-FPM
 CMD ["php-fpm"]

@@ -1,11 +1,11 @@
 services:
   php:
-    image: symfony-php-7
-    user: "www-data"
+    image: symfony-php-1
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"  # Zmiana z "www-data" na dynamiczne ID
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: symfony-php-7
+    container_name: symfony-php-1
     restart: unless-stopped
     working_dir: /app
     volumes:
@@ -13,12 +13,14 @@ services:
     environment:
       APP_ENV: dev
       DATABASE_URL: mysql://symfony:symfony@database:3306/symfony?serverVersion=8.0&charset=utf8mb4
+      NPM_CONFIG_CACHE: /app/.npm
+      NPM_CONFIG_PREFIX: /app/.npm
     depends_on:
       - database
 
   database:
     image: mysql:8.0
-    container_name: symfony-mysql-7
+    container_name: symfony-mysql-1
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -32,7 +34,7 @@ services:
 
   nginx:
     image: nginx:latest
-    container_name: symfony-nginx-7
+    container_name: symfony-nginx-1
     restart: unless-stopped
     volumes:
       - .:/app
@@ -44,7 +46,8 @@ services:
 
   node:
     image: node:18
-    container_name: symfony-node-7
+    container_name: symfony-node-1
+    user: "1000:1000"  # Użyj UID i GID swojego użytkownika na hoście
     working_dir: /app
     volumes:
       - .:/app
