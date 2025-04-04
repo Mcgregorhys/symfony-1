@@ -12,6 +12,10 @@ Encore
     .setOutputPath('public/build/')
     // public path used by the web server to access the output path
     .setPublicPath('/build')
+    .configureFilenames({
+        js: '[name].[contenthash].js',
+        css: '[name].[contenthash].css'
+    })
     // only needed for CDN's or subdirectory deploy
     //.setManifestKeyPrefix('build/')
 

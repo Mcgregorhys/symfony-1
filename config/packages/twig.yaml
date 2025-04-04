@@ -1,5 +1,11 @@
 twig:
     file_name_pattern: '*.twig'
+    default_path: '%kernel.project_dir%/templates'
+    globals:
+        live_component_renderer: '@ux.live_component.twig.component_runtime'
+    paths:
+        '%kernel.project_dir%/vendor/symfony/ux-live-component/templates': LiveComponent
+    
 
 when@test:
     twig:

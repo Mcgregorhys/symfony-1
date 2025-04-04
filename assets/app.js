@@ -12,6 +12,9 @@ import './styles/app.css';
 // import './bootstrap';
 import './bootstrap.js';
 
+import { Application } from "@hotwired/stimulus";
+const application = Application.start();
+
 const btn = document.getElementById("hamburger-icon");
 const nav = document.getElementById("mobile-menu");
 btn.addEventListener("click", () => {

@@ -16,11 +16,11 @@
         <li>Your controller at <code>/app/src/Controller/TestController.php</code></li>
         <li>Your template at <code>/app/templates/test/index.html.twig</code></li>
     </ul>
-    {# {{ init_live_component('RandomNumber', { max: 500 }) }} #}
+   
       {{ component('RandNr', { max: 5 }) }}
       
     <div data-controller="example">
-    {# <button data-action="click->example#handleClick">Click me</button> #}
+    <button data-action="click->example#handleClick">Click me</button>
 </div>
 </div>
 

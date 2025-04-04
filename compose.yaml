@@ -1,22 +1,23 @@
 services:
   php:
     image: symfony-php-1
-    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"  # Zmiana z "www-data" na dynamiczne ID
     build:
       context: .
       dockerfile: Dockerfile
+    user: "${USER_ID:-1000}:${GROUP_ID:-1000}"
     container_name: symfony-php-1
     restart: unless-stopped
     working_dir: /app
     volumes:
-      - .:/app
+      - .:/app:cached
+      - php_npm:/app/.npm
+    #  - php_node_modules:/app/node_modules
     environment:
       APP_ENV: dev
       DATABASE_URL: mysql://symfony:symfony@database:3306/symfony?serverVersion=8.0&charset=utf8mb4
-      NPM_CONFIG_CACHE: /app/.npm
-      NPM_CONFIG_PREFIX: /app/.npm
     depends_on:
-      - database
+      database:
+        condition: service_healthy
 
   database:
     image: mysql:8.0
@@ -31,6 +32,11 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
 
   nginx:
     image: nginx:latest
@@ -47,11 +53,23 @@ services:
   node:
     image: node:18
     container_name: symfony-node-1
-    user: "1000:1000"  # Użyj UID i GID swojego użytkownika na hoście
+    user: "1000:1000"
     working_dir: /app
+    environment:
+      NPM_CONFIG_PREFIX: /home/node/.npm-global
+      NPM_CONFIG_CACHE: /home/node/.npm-cache
     volumes:
-      - .:/app
+      - .:/app:cached
+      - node_data:/home/node
+      - public_build:/app/public/build
     command: ["tail", "-f", "/dev/null"]
+    networks:
+      - default
 
 volumes:
   db_data:
+  php_npm:
+  php_node_modules:
+  node_modules:
+  public_build:
+  node_data: {}
