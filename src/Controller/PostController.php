@@ -6,21 +6,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+
+#[Route('/', requirements: ['_locale' => 'en|pl'])]
+
 class PostController extends AbstractController
 {
-    #[Route('/', methods: ['GET'], name: 'posts.index')]
+    #[Route('/{_locale}', methods: ['GET'], name: 'posts.index')]
     public function index(): Response
     {
         return $this->render('post/index.html.twig');
     }
 
-    #[Route('/post/new', methods: ['GET', 'POST'], name: 'posts.new')]
+    #[Route('/post/new/{_locale}', methods: ['GET', 'POST'], name: 'posts.new')]
     public function new(): Response
     {
         return $this->render('post/new.html.twig');
     }
 
-    #[Route('/post/{id}', methods: ['GET'], name: 'posts.show')]
+    #[Route('/post/{id}/{_locale}', methods: ['GET'], name: 'posts.show')]
     public function show($id): Response
     {
         return $this->render('post/show.html.twig');
