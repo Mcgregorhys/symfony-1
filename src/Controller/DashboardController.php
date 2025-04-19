@@ -12,6 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 class DashboardController extends AbstractController
 {
@@ -32,12 +33,26 @@ class DashboardController extends AbstractController
         $imageForm->handleRequest($request);
         $user = $this->getUser();
         if ($imageForm->isSubmitted() && $imageForm->isValid()) {
-            // $image = $imageForm->getData();
-            $image->setPath($imageForm->get('imageFile')->getData()->getClientOriginalName());
-            if ($user->getImage()) {
-                $oldImage = $entityManager->getRepository(Image::class)->find($user->getImage()->getId());
-                $entityManager->remove($oldImage);
-            }
+            $imageFile = $imageForm->get('imageFile')->getData();
+            if ($imageFile) {
+                if ($user->getImage()?->getPath()) {
+                    unlink($this->getParameter('images_directory') . '/' .  $user->getImage()->getPath());
+                }
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'),
+                         $newFilename
+                    );
+                } catch (FileException $e) {
+// ... handle exception if something happens during file upload
+                }
+                $image->setPath($newFilename);
+                if ($user->getImage()) {
+                     $oldImage = $entityManager->getRepository(Image::class)->find($user->getImage()->getId());
+                     $entityManager->remove($oldImage);
+                }
             $user->setImage($image);
             $entityManager->persist($image);
             $entityManager->persist($user);
@@ -46,6 +61,7 @@ class DashboardController extends AbstractController
                 'status-image',
                 'image-updated'
             );
+            }
             return $this->redirectToRoute('app_profile');
         }
 
