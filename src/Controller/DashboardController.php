@@ -30,6 +30,10 @@ class DashboardController extends AbstractController
         $imageForm->handleRequest($request);
         if ($imageForm->isSubmitted() && $imageForm->isValid()) {
             $image = $imageForm->getData();
+            $this->addFlash(
+                'status-image',
+                'image-updated'
+            );
             return $this->redirectToRoute('app_profile');
         }
 
@@ -40,6 +44,10 @@ class DashboardController extends AbstractController
 
         if ($userForm->isSubmitted() && $userForm->isValid()) {
             $user = $userForm->getData();
+            $this->addFlash(
+                'status-profile-information',
+                'user-updated'
+            );
             return $this->redirectToRoute('app_profile');
         }
 
@@ -49,6 +57,10 @@ class DashboardController extends AbstractController
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
             $user = $passwordForm->getData();
+            $this->addFlash(
+                'status-password',
+                'password-changed'
+            );
             return $this->redirectToRoute('app_profile');
         }
 
