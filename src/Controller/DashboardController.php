@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use App\Services\ImageUploader;
 
 class DashboardController extends AbstractController
 {
@@ -25,7 +26,7 @@ class DashboardController extends AbstractController
     }
 
     #[Route('/dashboard/profile', name: 'app_profile')]
-    public function profile(Request $request, EntityManagerInterface $entityManager, Security $security): Response
+    public function profile(Request $request, EntityManagerInterface $entityManager, Security $security, ImageUploader $imageUploader): Response
     {
         // change image
         $image = new Image();
@@ -38,16 +39,9 @@ class DashboardController extends AbstractController
                 if ($user->getImage()?->getPath()) {
                     unlink($this->getParameter('images_directory') . '/' .  $user->getImage()->getPath());
                 }
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
 
-                try {
-                    $imageFile->move(
-                        $this->getParameter('images_directory'),
-                         $newFilename
-                    );
-                } catch (FileException $e) {
-// ... handle exception if something happens during file upload
-                }
+                $newFilename = $imageUploader->upload($imageFile);
+
                 $image->setPath($newFilename);
                 if ($user->getImage()) {
                      $oldImage = $entityManager->getRepository(Image::class)->find($user->getImage()->getId());

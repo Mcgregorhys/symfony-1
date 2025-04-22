@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
-#[ORM\Table(name: "posts")]
+#[ORM\Table(name:'posts')]
 class Post
 {
     #[ORM\Id]
@@ -19,7 +21,7 @@ class Post
     #[ORM\Column(length: 255)]
     #[Assert\Type('string')]
     #[Assert\Length(
-        max: 100,
+        max:20,
         maxMessage: 'Title too long',
     )]
     private ?string $title = null;
@@ -27,7 +29,7 @@ class Post
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\Type('string')]
     #[Assert\Length(
-        max: 3000,
+        max:1000,
         maxMessage: 'Content too long',
     )]
     private ?string $content = null;
@@ -42,6 +44,26 @@ class Post
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'likedPost')]
+
+    private Collection $usersThatLike;
+
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'dislikedPost')]
+
+    private Collection $usersThatDontLike;
+
+    public function __construct()
+    {
+        $this->usersThatLike = new ArrayCollection();
+        $this->usersThatDontLike = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -52,7 +74,7 @@ class Post
         return $this->title;
     }
 
-    public function setTitle(string $title): self
+    public function setTitle(string $title): static
     {
         $this->title = $title;
 
@@ -64,7 +86,7 @@ class Post
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(string $content): static
     {
         $this->content = $content;
 
@@ -76,7 +98,7 @@ class Post
         return $this->created_at;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $created_at): self
+    public function setCreatedAt(\DateTimeImmutable $created_at): static
     {
         $this->created_at = $created_at;
 
@@ -88,7 +110,7 @@ class Post
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updated_at): self
+    public function setUpdatedAt(?\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
 
@@ -100,11 +122,64 @@ class Post
         return $this->user;
     }
 
-    public function setUser(?User $user): self
+    public function setUser(?User $user): static
     {
         $this->user = $user;
 
         return $this;
     }
-}
 
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsersThatLike(): Collection
+    {
+        return $this->usersThatLike;
+    }
+
+    public function addUsersThatLike(User $usersThatLike): static
+    {
+        if (!$this->usersThatLike->contains($usersThatLike)) {
+            $this->usersThatLike->add($usersThatLike);
+            $usersThatLike->addLikedPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersThatLike(User $usersThatLike): static
+    {
+        if ($this->usersThatLike->removeElement($usersThatLike)) {
+            $usersThatLike->removeLikedPost($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsersThatDontLike(): Collection
+    {
+        return $this->usersThatDontLike;
+    }
+
+    public function addUsersThatDontLike(User $usersThatDontLike): static
+    {
+        if (!$this->usersThatDontLike->contains($usersThatDontLike)) {
+            $this->usersThatDontLike->add($usersThatDontLike);
+            $usersThatDontLike->addDislikedPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUsersThatDontLike(User $usersThatDontLike): static
+    {
+        if ($this->usersThatDontLike->removeElement($usersThatDontLike)) {
+            $usersThatDontLike->removeDislikedPost($this);
+        }
+
+        return $this;
+    }
+}
