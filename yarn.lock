@@ -956,7 +956,7 @@
   integrity sha512-MWP5d2kKqmfXcnqTTd3yJjIrtQ1hs59OqgYaiRUEuu/bf7Vnz1ZUrAiwrFpa89zZHcABIh1OziB8RdcSa/hZMg==
 
 "@symfony/ux-live-component@file:vendor/symfony/ux-live-component/assets":
-  version "1.0.0"
+  version "2.23.0"
   resolved "file:vendor/symfony/ux-live-component/assets"
   dependencies:
     idiomorph "^0.3.0"

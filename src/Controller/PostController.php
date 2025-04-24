@@ -71,6 +71,7 @@ class PostController extends AbstractController
     {
         // return $this->redirectToRoute('posts.index');
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $post->setUpdatedAt(new \DateTimeImmutable('now'));
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
